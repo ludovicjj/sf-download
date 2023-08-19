@@ -1,0 +1,10 @@
+#migrations_directory: "./migrations/Secondary"
+#migrations_namespace: DoctrineMigrationsSecondary
+#table_name: migration_versions
+#name: Application Migrations Secondary
+
+
+migrations_paths:
+    'DoctrineMigrationsSecondary': './migrations/Secondary'
+em: secondary
+
