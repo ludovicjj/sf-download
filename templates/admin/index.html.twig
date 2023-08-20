@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container">
+        <h1 class="mb-4">Article! 🚀</h1>
+        <div class="col-12 mb-4">
+            <a class="btn btn-primary btn-sm" href="{{ path('admin_article_new') }}">Add an article</a>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Slug</th>
+                    <th scope="col">Voir</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for article in articles %}
+                <tr>
+                    <th>{{ article.id }}</th>
+                    <td>{{ article.title }}</td>
+                    <td>{{ article.slug }}</td>
+                    <td><a class="btn btn-sm btn-primary" href="{{ path('admin_article_edit', {'id': article.id}) }}">Modifier</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

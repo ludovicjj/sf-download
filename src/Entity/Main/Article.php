@@ -2,12 +2,14 @@
 
 namespace App\Entity\Main;
 
-use App\Repository\BatchFileRepository;
+use App\Repository\ArticleRepository;
+use App\Service\UploaderHelper;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: BatchFileRepository::class)]
+#[ORM\Entity(repositoryClass: ArticleRepository::class)]
 class Article
 {
     use TimestampableEntity;
@@ -18,6 +20,7 @@ class Article
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank]
     private ?string $title = null;
 
     #[ORM\Column(length: 100, unique: true)]
@@ -70,6 +73,6 @@ class Article
 
     public function getFilePath(): string
     {
-        return 'files/'.$this->getFilename();
+        return UploaderHelper::ARTICLE_FILE_DIR . '/'.$this->getFilename();
     }
 }
