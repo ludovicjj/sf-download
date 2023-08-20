@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container">
+        <h1>Create a new Article! 🚀</h1>
+
+        {{ form_start(postForm, {'attr': {'novalidate': 'novalidate'}}) }}
+        {{ form_row(postForm.title, {
+            label: 'Article title'
+        }) }}
+
+        {% if postForm.vars.data.imageFilename|default(false) %}
+            <a href="{{ uploaded_article_asset(postForm.vars.data.imagePath) }}" target="_blank">
+                <img src="{{ postForm.vars.data.imagePath|imagine_filter('squared_thumbnail_small') }}" height="100" alt="">
+            </a>
+        {% endif %}
+
+        {{ form_row(postForm.imageFile, {
+            label: 'Image file'
+        }) }}
+
+        <button type="submit" class="btn btn-primary">Envoyer</button>
+        {{ form_end(postForm) }}
+    </div>
+{% endblock %}

@@ -2,17 +2,15 @@
 
 namespace App\Entity\Main;
 
-use App\Repository\ArticleRepository;
+use App\Repository\PostRepository;
 use App\Service\UploaderHelper;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Gedmo\Mapping\Annotation as Gedmo;
 
-#[ORM\Entity(repositoryClass: ArticleRepository::class)]
-class Article
+#[ORM\Entity(repositoryClass: PostRepository::class)]
+class Post
 {
     use TimestampableEntity;
 
@@ -32,18 +30,11 @@ class Article
     #[ORM\Column(nullable: true)]
     private ?string $imageFilename = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?string $excelFilename = null;
+    #[ORM\Column(length: 255)]
+    private ?string $originalFilename = null;
 
-    // Can get ArticleReference from Article, but not set/add
-    // Must use ArticleReference to set Article to ArticleReference
-    #[ORM\OneToMany(mappedBy: 'article', targetEntity: ArticleReference::class)]
-    private Collection $articleReferences;
-
-    public function __construct()
-    {
-        $this->articleReferences = new ArrayCollection();
-    }
+    #[ORM\Column(length: 255)]
+    private ?string $mimeType = null;
 
     public function getId(): ?int
     {
@@ -85,28 +76,30 @@ class Article
         return $this;
     }
 
-    public function getExcelFilename(): ?string
+    public function getOriginalFilename(): ?string
     {
-        return $this->excelFilename;
+        return $this->originalFilename;
     }
 
-    public function setExcelFilename(string $excelFilename): self
+    public function setOriginalFilename(string $originalFilename): self
     {
-        $this->excelFilename = $excelFilename;
+        $this->originalFilename = $originalFilename;
+        return $this;
+    }
 
+    public function getMimeType(): ?string
+    {
+        return $this->mimeType;
+    }
+
+    public function setMimeType(string $mimeType): self
+    {
+        $this->mimeType = $mimeType;
         return $this;
     }
 
     public function getImagePath(): string
     {
-        return UploaderHelper::ARTICLE_IMAGE_DIR . '/'.$this->getImageFilename();
-    }
-
-    /**
-     * @return Collection<int, ArticleReference>
-     */
-    public function getArticleReferences(): Collection
-    {
-        return $this->articleReferences;
+        return UploaderHelper::POST_IMAGE_DIR . '/'. $this->getImageFilename();
     }
 }

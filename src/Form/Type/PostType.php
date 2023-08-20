@@ -2,35 +2,24 @@
 
 namespace App\Form\Type;
 
-use App\Entity\Main\Article;
+use App\Entity\Main\Post;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\Image;
 use Symfony\Component\Validator\Constraints\NotNull;
 
-class ArticleType extends AbstractType
+class PostType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        /** @var Article $article */
-        $article = $options['data'] ?? null;
-        $isEdit = $article && $article->getId();
+        /** @var Post $post */
+        $post = $options['data'] ?? null;
+        $isEdit = $post && $post->getId();
 
         $builder->add('title', TextType::class);
-
-        $excelFileConstraints  = [
-            new File([
-                'maxSize' => '5M',
-                'extensions' => [
-                    'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-                ],
-                'extensionsMessage' => "Extension invalide, extension autorisée xlsx"
-            ])
-        ];
 
         $imageFileConstraints= [
             new Image([
@@ -38,15 +27,9 @@ class ArticleType extends AbstractType
             ])
         ];
 
-        if (!$isEdit || !$article->getImageFilename()) {
+        if (!$isEdit || !$post->getImageFilename()) {
             $imageFileConstraints[] = new NotNull([
                 'message' => 'Please upload an image',
-            ]);
-        }
-
-        if (!$isEdit || !$article->getExcelFilename()) {
-            $excelFileConstraints[] = new NotNull([
-                'message' => 'Please upload an excel',
             ]);
         }
 
@@ -56,20 +39,13 @@ class ArticleType extends AbstractType
                 'mapped'        => false,
                 'constraints'   => $imageFileConstraints
             ])
-            ->add('excelFile', FileType::class, [
-                'required'      => false,
-                'mapped'        => false,
-                'constraints'   => $excelFileConstraints
-            ])
         ;
-
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-           'data_class' => Article::class
+            'data_class' => Post::class
         ]);
     }
 }

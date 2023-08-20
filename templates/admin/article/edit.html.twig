@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/delete_reference.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <div class="col-12 my-4">
+            <h1>Edit the Article! 🚀</h1>
+
+
+            {{ form_start(articleForm, {'attr': {'novalidate': 'novalidate'}}) }}
+            {{ form_row(articleForm.title, {
+                label: 'Article title'
+            }) }}
+
+            {% if articleForm.vars.data.imageFilename %}
+                <a href="{{ uploaded_article_asset(articleForm.vars.data.imagePath) }}" target="_blank">
+                    <img src="{{ articleForm.vars.data.imagePath|imagine_filter('squared_thumbnail_small') }}" height="100" alt="">
+                </a>
+            {% endif %}
+
+            {{ form_row(articleForm.imageFile, {
+                label: 'Image file'
+            }) }}
+
+            {{ form_row(articleForm.excelFile, {
+                label: 'Excel file'
+            }) }}
+
+            <button type="submit" class="btn btn-primary btn-sm">Envoyer</button>
+            {{ form_end(articleForm) }}
+        </div>
+
+        <div class="col-12">
+            <h3>References</h3>
+            <div class="row">
+                <div class="col-7">
+                    <form action="{{ path('admin_article_add_reference', {'id': article.id}) }}" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <input type="file" name="reference" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary">Upload</button>
+                    </form>
+                </div>
+                <div class="offset-1 col-4">
+                    <ul class="list-group small">
+                        {% for reference in article.articleReferences %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <a href="{{ path('admin_article_download_reference', {'id': reference.id}) }}">
+                                        {{ reference.originalFilename }}
+                                    </a>
+                                </span>
+                                <span>
+                                    <a href="{{ path('admin_article_delete_reference', {'id': reference.id}) }}" class="js-delete-ref">
+                                        Supprimer
+                                    </a>
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

@@ -3,8 +3,21 @@ oneup_flysystem:
     adapters:
         public_uploads_adapter:
             local:
-                location: '%kernel.project_dir%/public/uploads'
+                location: '%kernel.project_dir%/public/%uploads_dir_name%'
+        private_uploads_adapter:
+            local:
+                location: '%kernel.project_dir%/var/uploads'
+        s3_uploads_adapter:
+            awss3v3:
+                client: Aws\S3\S3Client
+                bucket: '%env(AWS_BUCKET)%'
     filesystems:
-        public_uploads__filesystem:
+        public_uploads_filesystem:
             adapter: public_uploads_adapter
+            alias: League\Flysystem\Filesystem
+        private_uploads_filesystem:
+            adapter: private_uploads_adapter
+            alias: League\Flysystem\Filesystem
+        s3_uploads_filesystem:
+            adapter: s3_uploads_adapter
             alias: League\Flysystem\Filesystem

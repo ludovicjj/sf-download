@@ -1,0 +1,45 @@
+# Documentation on how to configure the bundle can be found at: https://symfony.com/doc/current/bundles/LiipImagineBundle/basic-usage.html
+liip_imagine:
+    # valid drivers options include "gd" or "gmagick" or "imagick"
+    driver: "gd"
+
+    loaders:
+        flysystem_loader:
+            flysystem:
+                filesystem_service: oneup_flysystem.public_uploads_filesystem_filesystem
+        s3_loader:
+            flysystem:
+                filesystem_service: oneup_flysystem.s3_uploads_filesystem_filesystem
+    # default loader to use for all filter sets
+    data_loader: flysystem_loader
+
+    resolvers:
+        flysystem_resolver:
+            flysystem:
+                filesystem_service: oneup_flysystem.public_uploads_filesystem_filesystem
+                cache_prefix: media/cache
+                root_url: '%uploads_base_url%'
+        aws_s3_resolver:
+            flysystem:
+                filesystem_service: oneup_flysystem.s3_uploads_filesystem_filesystem
+                cache_prefix: media/cache
+                root_url: '%s3_base_url%'
+    # default cache resolver for saving thumbnails
+    cache: flysystem_resolver
+
+    filter_sets:
+        squared_thumbnail_small:
+            filters:
+                thumbnail:
+                    size: [30, 30]
+                    mode: outbound
+                    allow_upscale: true
+
+        squared_s3_thumbnail_small:
+            data_loader: s3_loader
+            cache: aws_s3_resolver
+            filters:
+                thumbnail:
+                    size: [ 30, 30 ]
+                    mode: outbound
+                    allow_upscale: true

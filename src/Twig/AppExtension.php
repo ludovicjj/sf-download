@@ -2,14 +2,14 @@
 
 namespace App\Twig;
 
-use Symfony\Component\Asset\Context\RequestStackContext;
+use App\Service\UploaderHelper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
 {
     public function __construct(
-        private readonly RequestStackContext $requestStackContext
+        private readonly UploaderHelper $uploaderHelper
     )
     {
     }
@@ -23,6 +23,6 @@ class AppExtension extends AbstractExtension
 
     public function getUploadedAssetPath(string $path): string
     {
-        return $this->requestStackContext->getBasePath() . '/';
+        return $this->uploaderHelper->getImagePath($path);
     }
 }

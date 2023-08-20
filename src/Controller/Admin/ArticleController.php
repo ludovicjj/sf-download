@@ -18,7 +18,7 @@ class ArticleController extends AbstractController
     #[Route('/admin/articles', name: 'admin_articles')]
     public function index(ArticleRepository $articleRepository): Response
     {
-        return $this->render('admin/index.html.twig', [
+        return $this->render('admin/article/index.html.twig', [
             'articles' => $articleRepository->findAll()
         ]);
     }
@@ -35,13 +35,17 @@ class ArticleController extends AbstractController
             /** @var Article $article */
             $article = $articleForm->getData();
 
-            /** @var UploadedFile|null $uploadedFile */
-            $uploadedFile = $articleForm->get('file')->getData();
+            /** @var UploadedFile $uploadedFile */
+            $imageFile = $articleForm->get('imageFile')->getData();
 
-            if ($uploadedFile) {
-                $filename = $uploaderHelper->uploadArticleFile($uploadedFile);
-                $article->setFilename($filename);
-            }
+            /** @var UploadedFile $excelFile */
+            $excelFile = $articleForm->get('excelFile')->getData();
+
+            $imageFilename = $uploaderHelper->uploadArticleImageFile($imageFile, null);
+            $article->setImageFilename($imageFilename);
+
+            $excelFilename = $uploaderHelper->uploadArticleExcelFile($excelFile, null);
+            $article->setExcelFilename($excelFilename);
 
             $entityManager->persist($article);
             $entityManager->flush();
@@ -49,9 +53,8 @@ class ArticleController extends AbstractController
             return $this->redirectToRoute('admin_articles');
         }
 
-        return $this->render('admin/upload_test.html.twig', [
-            'articleForm' => $articleForm,
-            'created' => true
+        return $this->render('admin/article/new.html.twig', [
+            'articleForm' => $articleForm
         ]);
     }
 
@@ -69,11 +72,19 @@ class ArticleController extends AbstractController
             $article = $articleForm->getData();
 
             /** @var UploadedFile|null $uploadedFile */
-            $uploadedFile = $articleForm->get('file')->getData();
+            $imageFile = $articleForm->get('imageFile')->getData();
 
-            if ($uploadedFile) {
-                $filename = $uploaderHelper->uploadArticleFile($uploadedFile);
-                $article->setFilename($filename);
+            /** @var UploadedFile|null $excelFile */
+            $excelFile = $articleForm->get('excelFile')->getData();
+
+            if ($imageFile) {
+                $imageFilename = $uploaderHelper->uploadArticleImageFile($imageFile, $article->getImageFilename());
+                $article->setImageFilename($imageFilename);
+            }
+
+            if ($excelFile) {
+                $excelFilename = $uploaderHelper->uploadArticleExcelFile($excelFile, $article->getExcelFilename());
+                $article->setExcelFilename($excelFilename);
             }
 
             $entityManager->flush();
@@ -81,8 +92,9 @@ class ArticleController extends AbstractController
             return $this->redirectToRoute('admin_articles');
         }
 
-        return $this->render('admin/upload_test.html.twig', [
-            'articleForm' => $articleForm
+        return $this->render('admin/article/edit.html.twig', [
+            'articleForm'   => $articleForm,
+            'article'       => $article
         ]);
     }
 }
